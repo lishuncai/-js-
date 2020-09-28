@@ -148,6 +148,11 @@ var calculateBonus = function (performanceLevel, salary) {
 calculateBonus('B', 20000); // 输出：40000 calculateBonus( 'S', 6000 );      // 输出：24000 
 
 ```
+缺点：
+
+    calculateBonus 函数比较庞大，包含了很多 if-else 语句，这些语句需要覆盖所有的逻辑 分支。
+    calculateBonus 函数缺乏弹性，如果增加了一种新的绩效等级 C，或者想把绩效 S 的奖金 系数改为 5，那我们必须深入 calculateBonus 函数的内部实现，这是违反开放封闭原则的。
+    算法的复用性差，如果在程序的其他地方需要重用这些计算奖金的算法呢？我们的选择 只有复制和粘贴。 
 
 策略模式
 ```
