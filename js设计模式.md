@@ -209,8 +209,8 @@ console.log( bonus.getBonus() );    // 输出：30000
 ```
 
 ```
-/* 策略2 */
-/* 使用js的 */
+/* 策略2，适用于js的 */
+
 var strategies = {
     "S": function (salary) {
         return salary * 4;
@@ -230,4 +230,16 @@ var calculateBonus = function (level, salary) {
 console.log(calculateBonus('S', 20000)); // 输出：80000 
 console.log(calculateBonus('A', 10000)); // 输出：30000
 
+/* 策略3，隐式的策略模式 */
+/* 在函数作为一等对象的语言中，策略模式是隐形的。 strategy 就是值为函数的变量 */
+
+var S = function( salary ){      return salary * 4;  }; 
+ 
+var A = function( salary ){     return salary * 3; }; 
+ 
+var B = function( salary ){     return salary * 2; }; 
+ 
+var calculateBonus = function( func, salary ){     return func( salary ); }; 
+ 
+calculateBonus( S, 10000  );    // 输出：40000
 ```
