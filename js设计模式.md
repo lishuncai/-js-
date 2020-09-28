@@ -1,5 +1,15 @@
 # js设计模式 
 
+### 相关概念
+
+#### 多态
+
+同一操作作用于不同的对象上面，可以产生不同的解释和不同的执行结 果。换句话说，给不同的对象发送同一个消息的时候，这些对象会根据这个消息分别给出不同的 反馈。 
+
+-------
+
+### 设计模式
+
 #### 单例模式
 
 《javascript设计模式与开发实践》
@@ -8,7 +18,26 @@
     
 - 描述： 单例模式是一种常用的模式，有一些对象我们往往只需要一个，比如线程池、全局缓存、浏 览器中的 window 对象等。在 JavaScript开发中，单例模式的用途同样非常广泛。
     试想一下，当我 们单击登录按钮的时候，页面中会出现一个登录浮窗，而这个登录浮窗是唯一的，无论单击多少 次登录按钮，这个浮窗都只会被创建一次，那么这个登录浮窗就适合用单例模式来创建。
-    
+
+- 涉及相关：闭包、高阶
+
+```
+/* 常规 */
+
+var createLoginLayer = function () {
+    var div = document.createElement('div');
+    div.innerHTML = '我是登录浮窗';
+    div.style.display = 'none';
+    document.body.appendChild(div);
+    return div;
+};
+
+document.getElementById('loginBtn').onclick = function () {
+    var loginLayer = createLoginLayer();
+    loginLayer.style.display = 'block';
+};
+
+```
 
 ```
 /* 用代理实现单例 */
@@ -83,3 +112,112 @@ render();
 ```
 
 ------
+
+#### 策略模式
+
+《javascript设计模式与开发实践》
+    
+- 定义：定义一系列的算法，把它们一个个封装起来，并且使它们可以相互替换。
+    
+- 描述：在程序设计中，我们也常常遇到类似的情况，要实现某一个功能有多种方案可以选择。比如 一个压缩文件的程序，既可以选择 zip算法，也可以选择 gzip算法。 这些算法灵活多样，而且可以随意互相替换。这种解决方案就是本章将要介绍的策略模式。
+
+- 描述： 一个基于策略模式的程序至少由两部分组成。第一个部分是一组策略类，策略类封装了具体 的算法，并负责具体的计算过程。 第二个部分是环境类 Context，Context接受客户的请求，随后 把请求委托给某一个策略类。要做到这点，说明 Context中要维持对某个策略对象的引用。
+
+- 涉及相关： 多态
+
+##### 案例： 很多公司的年终奖是根据员工的工资基数和年底绩效情况来发放的。例如，绩效为S的人年 终奖有 4倍工资，绩效为 A的人年终奖有 3倍工资，而绩效为 B的人年终奖是 2倍工资。假设财 务部要求我们提供一段代码，来方便他们计算员工的年终奖。 
+
+```
+/* 常规代码 */
+var calculateBonus = function (performanceLevel, salary) {
+
+    if (performanceLevel === 'S') {
+        return salary * 4;
+    }
+
+    if (performanceLevel === 'A') {
+        return salary * 3;
+    }
+
+    if (performanceLevel === 'B') {
+        return salary * 2;
+    }
+
+};
+
+calculateBonus('B', 20000); // 输出：40000 calculateBonus( 'S', 6000 );      // 输出：24000 
+
+```
+
+策略模式
+```
+/* em1 */
+var performanceS = function(){}; 
+ 
+performanceS.prototype.calculate = function( salary ){     return salary * 4; }; 
+ 
+var performanceA = function(){}; 
+ 
+performanceA.prototype.calculate = function( salary ){     return salary * 3; }; 
+ 
+var performanceB = function(){}; 
+ 
+performanceB.prototype.calculate = function( salary ){     return salary * 2; }; 
+
+var Bonus = function () {
+    this.salary = null; // 原始工资    
+    this.strategy = null; // 绩效等级对应的策略对象 
+};
+
+var Bonus = function () {
+    this.salary = null; // 原始工资    
+    this.strategy = null; // 绩效等级对应的策略对象 
+};
+
+Bonus.prototype.setSalary = function (salary) {
+    this.salary = salary; // 设置员工的原始工资 }; 
+
+    Bonus.prototype.setStrategy = function (strategy) {
+        this.strategy = strategy; // 设置员工绩效等级对应的策略对象 
+    };
+
+    Bonus.prototype.getBonus = function () { // 取得奖金数额 
+        return this.strategy.calculate(this.salary); // 把计算奖金的操作委托给对应的策略对象 
+    }
+}
+
+var bonus = new Bonus();
+
+bonus.setSalary(10000);
+bonus.setStrategy(new performanceS()); // 设置策略对象 
+
+console.log(bonus.getBonus()); // 输出：40000     
+
+bonus.setStrategy(new performanceA()); // 设置策略对象 
+console.log( bonus.getBonus() );    // 输出：30000  
+
+```
+
+```
+/* 策略2 */
+/* 使用js的 */
+var strategies = {
+    "S": function (salary) {
+        return salary * 4;
+    },
+    "A": function (salary) {
+        return salary * 3;
+    },
+    "B": function (salary) {
+        return salary * 2;
+    }
+};
+
+var calculateBonus = function (level, salary) {
+    return strategies[level](salary);
+};
+
+console.log(calculateBonus('S', 20000)); // 输出：80000 
+console.log(calculateBonus('A', 10000)); // 输出：30000
+
+```
