@@ -316,3 +316,46 @@ alert ( proxyPlus( 1, 2, 3, 4 ) );    // 输出：10
 alert ( proxyPlus( 1, 2, 3, 4 ) );    // 输出：10
 
 ```
+
+
+### 享元模式
+
+享元模式是为解决性能问题而生的模式，这跟大部分模式的诞生原因都不一样。在一个存在 大量相似对象的系统中，享元模式可以很好地解决大量对象带来的性能问题。
+
+#### 对象池
+
+```
+var objectFactory = function(createObj){
+    var pool = [];
+    return {
+        create: function() {
+            var obj = pool.length === 0?
+                createObj.apply(this, arguments): pool.shift();
+            return obj
+        },
+        recover (obj) {
+            pool.push(obj)
+        },
+        log() {
+            console.log(pool)
+        }
+    }
+}
+var iframeFactory = objectFactory(() => {
+    var iframe = document.createElement('iframe');
+    document.body.appendChild(iframe)
+    iframe.onload = function() {
+        this.onload = null;
+        iframeFactory.recover(this)
+    }
+    return iframe;
+})
+
+var iframe1 = iframeFactory.create();
+iframe1.src = 'https://baidu.com';
+setTimeout(() => {
+    var iframe2 = iframeFactory.create();
+    iframe2.src = 'https://www.bilibili.com/';
+}, 5000)
+
+```
